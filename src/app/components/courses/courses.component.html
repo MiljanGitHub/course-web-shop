@@ -1,0 +1,14 @@
+<div class="container">
+    <div class="row text-center" *ngFor="let threeCourses of coursesToDisplay">
+        
+        <div class="card mb-3 col-lg-4 col-md-12 mt-4 px-1" *ngFor="let course of threeCourses">
+            <img src="https://i.imgur.com/IfoRpDP.png" class="card-img-top" alt="...">
+            <div class="card-body">
+              <h5 class="card-title">{{course['naziv']}}</h5>
+              <p class="card-text">{{course['opis']}}</p>
+              <button type="button" [routerLink]="['/courses', course['id'], course['naziv'] ]" class="btn btn-link">Visit course</button>
+            </div>
+        </div>
+       
+    </div>
+</div>
