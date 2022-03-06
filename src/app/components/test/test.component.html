@@ -1,0 +1,66 @@
+<div class="container">
+    <div class="row">
+        <div class="form-inline justify-content-center">
+            <form [formGroup]="myForm" (ngSubmit)="submitForm()" class="row g-3 needs-validation" novalidate>
+            
+                <div class="col-md-4">
+                    <label for="validationCustom02"  class="form-label">Naziv</label>
+                    <input type="text" class="form-control"  formControlName="name" id="validationCustom02"  required>
+                    
+                    <div *ngIf="myForm.get('name').invalid && myForm.get('name').errors && (myForm.get('name').dirty || myForm.get('name').touched)">
+
+                        <small class="text-danger" *ngIf="myForm.get('name').hasError('required')">
+                            This field is required.
+                        </small>
+                        <small class="text-danger" *ngIf="myForm.get('name').hasError('minlength')">
+                            The minimum length for this field is {{myForm.get('name').errors.minlength.requiredLength}} characters.
+                        </small>
+
+                    </div>
+                </div>
+
+                <!-- <div class="col-lg-12">
+                    <label for="opis">Opis:</label>
+                    <textarea formControlName="opis" required class="form-control" rows="5" id="opis"></textarea>
+                    <div *ngIf="myForm.get('opis').invalid && myForm.get('opis').errors && (myForm.get('opis').dirty || myForm.get('opis').touched)">
+  
+                      <small class="text-danger" *ngIf="myForm.get('autor').hasError('required')">
+                          This field is required.
+                      </small>
+                      <small class="text-danger" *ngIf="myForm.get('opis').hasError('minlength')">
+                          The minimum length for this field is {{myForm.get('opis').errors.minlength.requiredLength}} characters.
+                      </small>
+  
+                    </div>
+                  </div> -->
+
+                  <div class="col-md-3">
+
+
+                    <label for="kategorija" class="form-label">Kategorija</label>
+                    <ng-container *ngIf="categoryExist; else elseBlock">
+                      <select formControlName="kategorija" class="form-select" id="kategorija" required>
+                        <option *ngFor="let category of categories" [ngValue]="category">
+                          {{ category }}
+                        </option>
+                      </select>
+                    </ng-container>
+                
+                    <ng-template #elseBlock>
+                      
+                    </ng-template>
+                    <!-- <select class="form-select" id="kategorija" required>
+                      <option selected disabled value="">Choose...</option>
+                    </select> -->
+                  
+                  
+                  </div>
+  
+
+                <div class="col-12">
+                    <button class="btn btn-primary" [disabled]="myForm.invalid || !myForm.dirty" type="submit">Submit form</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

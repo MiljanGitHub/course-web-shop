@@ -12,6 +12,6 @@ export class Course {
     jezik!: string
     prosecnaOcena!: Number
     brojKorisnika!: Number
-    sertifikovan!: String
+    sertifikovan!: boolean
 
 }
