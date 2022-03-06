@@ -19,17 +19,12 @@ export class CourseComponent implements OnInit {
 
   categoryExist: boolean;
   course!: Course;
-  model: NgbDateStruct;
-  date: {year: number, month: number};
   myForm: FormGroup;
   categories: String[] = ['Web programiranje', 'Objektno programiranje', 'Algoritmi', 'Strukture podataka', 'Baze podataka'];
   constructor(public fb: FormBuilder, private activatedRoute: ActivatedRoute, private location: Location, private firebaseService : FirebaseService, private calendar: NgbCalendar) { 
 
   }
 
-  selectToday() {
-    this.model = this.calendar.getToday();
-  }
 
 
 
@@ -44,7 +39,7 @@ export class CourseComponent implements OnInit {
       if (courseId && courseName) {
  
         //check if 'courseId' is an integer value
-        var isInt = /^\+?\d+$/.test(courseId);
+        var isInt = Validator.isIntegerValue(courseId);
         if (!isInt){
           //if courseId' is not an integer value, redirect to 'courses' page
           alert("Nije celobrojna vrednost. Bicete redirected!")
@@ -80,32 +75,63 @@ export class CourseComponent implements OnInit {
                                    .slika("https://i.imgur.com/IfoRpDP.png")
                                    .brojKorisnika(32)
                                    .brojLekcija(15)
-                                   .kategorija("Programiranje")
+                                   .kategorija("aaa")
                                    .prosecnaOcena(3.2)
                                    .cena(3200)
                                    .jezik("Engleski")
                                    .datumIzmene("2021-04-15")
                                    .sertifikovan(true)
                                    .build()
-             this.checkCategory(this.course['kategorija'])                      
+             this.checkCategory(this.course['kategorija'])
              this.initReactiveForm();            
      
     });
     
   }
 
+  
+
   initReactiveForm() {
         
     this.myForm = this.fb.group({
-      naziv:      [this.course['naziv'],     [Validators.required, Validators.minLength(3),  Validator.cannotContainWhitespaceOnly]],
-      autor:      [this.course['autor'],     [Validators.required, Validators.minLength(5),  Validator.cannotContainWhitespaceOnly]],
-      opis:       [this.course['opis'],      [Validators.required, Validators.minLength(10), Validator.cannotContainWhitespaceOnly]],
-      kategorija: [this.course['kategorija'],[Validator.isUncategorized]]
+      naziv:        [this.course['naziv'],         [Validators.required, Validators.minLength(3),  Validator.cannotContainWhitespaceOnly]],
+      autor:        [this.course['autor'],         [Validators.required, Validators.minLength(5),  Validator.cannotContainWhitespaceOnly]],
+      opis:         [this.course['opis'],          [Validators.required, Validators.minLength(10), Validator.cannotContainWhitespaceOnly]],
+      kategorija:   [this.course['kategorija'],    [Validators.required, Validator.isUncategorized]],
+      cena:         [this.course['cena'],          [Validators.required, Validators.min(0)]],
+      jezik:        [this.course['jezik'],         [Validators.required, Validators.minLength(3)]],
+      datumIzmene:  [this.initFormControleValue(), [Validators.required, Validator.invalidDate]],
+      sertifikovan: [this.course['sertifikovan'],  []]
     })
+
   }
 
+  initFormControleValue() : any{
+    var year = this.initYear(this.course['datumIzmene']);
+    var month = this.initMonth(this.course['datumIzmene'])
+    var day = this.initDay(this.course['datumIzmene'])
+    return {year: year,month: month, day: day };
+  }
+
+  private initYear(datumIzmene : string) : number{
+    return Number(datumIzmene.substring(0,4))
+  }
+
+  private initMonth(datumIzmene : string) : number{
+    var twoDigitsNumber = datumIzmene.substring(5,7);
+    if (twoDigitsNumber.charAt(0) === '0') return Number(twoDigitsNumber.charAt(1));
+    return Number(twoDigitsNumber.charAt(0)+twoDigitsNumber.charAt(1))
+  }
+  
+  private initDay(datumIzmene : string) : number{
+    var twoDigitsNumber = datumIzmene.substring(8,10);
+    if (twoDigitsNumber.charAt(0) === '0') return Number(twoDigitsNumber.charAt(1));
+    return Number(twoDigitsNumber.charAt(0)+twoDigitsNumber.charAt(1))
+  }
+
+
   checkCategory(kategorija : string){
-    if (kategorija === null || kategorija.match(/^ *$/) !== null){
+    if (Validator.isEmptySpaceOrWhiteSpace(kategorija)){
       this.categoryExist = false;
       return;
     }
@@ -116,9 +142,12 @@ export class CourseComponent implements OnInit {
   }
 
   submitForm() {
+    //if this function is called, then form must be valid!
     console.log(this.myForm.value)
     console.log(this.course)
   }
+
+
 
   
 

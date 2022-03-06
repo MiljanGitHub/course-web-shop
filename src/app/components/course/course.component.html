@@ -89,22 +89,21 @@
                       </option>
                     </select>
                     <div *ngIf="myForm.dirty">
-
                       <small class="text-danger" *ngIf="myForm.get('kategorija').hasError('isUncategorized')">
                         You must select a category.
-                    </small>
+                      </small>
                     </div>
                   </ng-container>
               
                   <ng-template #elseBlock>
                     <select formControlName="kategorija" class="form-select" id="kategorija" >
                       <option  selected >Select category</option>
-                      <option *ngFor="let category of categories">{{ category }}</option>
+                      <option [ngValue]="category" *ngFor="let category of categories">{{ category }}</option>
                     </select>
                     <div *ngIf="myForm.dirty">
                       <small class="text-danger" *ngIf="myForm.get('kategorija').hasError('isUncategorized')">
                         You must select a category.
-                    </small>
+                      </small>
                   </div>
                   </ng-template>
 
@@ -115,37 +114,53 @@
                 </div>
 
                 <div class="col-md-4">
-                    <label for="validationCustom08"class="form-label">Cena</label>
-                    <input type="text"  value="3500RSD"  class="form-control" id="validationCustom08" required>
+                    <label for="cena" class="form-label">Cena</label>
+                    <input type="number" formControlName="cena"  [value]="course['cena']"  class="form-control" id="cena" required>
+                    <div *ngIf="myForm.dirty">
+                      <small class="text-danger" *ngIf="myForm.get('cena').hasError('required')">
+                        This field is required.
+                      </small>
+                      <small class="text-danger" *ngIf="myForm.get('cena').hasError('min') ">
+                        Price must be 0 or positive number.
+                      </small>
+                    </div>
                 </div>
                 <div class="col-md-4">
-                    <label for="validationCustom09"class="form-label">Jezik</label>
-                    <input type="text"  value="Engleski (English)" class="form-control" id="validationCustom09" required>
+                    <label for="jezik"class="form-label">Jezik</label>
+                    <input type="text" formControlName="jezik"  [value]="course['jezik']"  class="form-control" id="jezik" required>
+                    <div *ngIf="myForm.dirty">
+                      <small class="text-danger" *ngIf="myForm.get('jezik').hasError('required')">
+                        This field is required.
+                      </small>
+                      <small class="text-danger" *ngIf="myForm.get('jezik').hasError('minlength') ">
+                        The minimum length for this field is {{myForm.get('jezik').errors.minlength.requiredLength}} characters.                     
+                      </small>
+                    </div>
                 </div>
 
 
                 <div class="col-md-4">
-                    <label for="validationCustom10"class="form-label">Datum poslednje izmene</label>
-                    
-                    
-                    <form class="col-lg-12">
-                        <div class="col-12">
-                          <div class="input-group">
-                            <input class="form-control" placeholder="yyyy-mm-dd" name="dp" [(ngModel)]="model" ngbDatepicker #d="ngbDatepicker">
-                            <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
-                          </div>
-                        </div>
-                    </form>
-                    
-
-
+                    <label for="datumIzmene"class="form-label">Datum poslednje izmene</label>
+                    <!-- [(ngModel)]="model" [value]="course['datumIzmene']" [startDate]="date2" -->
+                    <div class="input-group">
+                      <input type="text" class="form-control"  formControlName="datumIzmene"   name="dp"  ngbDatepicker #d="ngbDatepicker">
+                      <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
+                      <div *ngIf="myForm.dirty">
+                        <small class="text-danger" *ngIf="myForm.get('datumIzmene').hasError('required')">
+                          This field is required.
+                        </small>
+                        <small class="text-danger" *ngIf="myForm.get('datumIzmene').hasError('invalidDate')">
+                          Date must be in valid format.
+                        </small>
+                      </div> 
+                    </div>
                 </div>
 
 
                 <div class="col-12">
                   <div class="form-check">
-                    <input class="form-check-input" type="checkbox"  id="invalidCheck" required>
-                    <label class="form-check-label" for="invalidCheck">
+                    <input class="form-check-input"  formControlName="sertifikovan" type="checkbox" checked="course['sertifikovan']" id="sertifikovan">
+                    <label class="form-check-label" for="sertifikovan">
                       Sertifikovan
                     </label>
                   </div>
