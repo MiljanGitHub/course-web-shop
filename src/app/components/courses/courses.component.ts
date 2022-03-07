@@ -1,41 +1,51 @@
 import { Component, OnInit } from '@angular/core';
 import { Builder } from 'builder-pattern';
 import { Course } from 'src/app/model/course';
+import { PipeTransform } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
+import { FormControl } from '@angular/forms';
+import { Observable, pipe } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-courses',
   templateUrl: './courses.component.html',
-  styleUrls: ['./courses.component.css']
+  styleUrls: ['./courses.component.css'],
+  providers: [DecimalPipe]
+
 })
 export class CoursesComponent implements OnInit {
-  public coursesToDisplay: Course[][] = [];
-  public courses: Course[] = [];
-  constructor() {
-    this.courses = [Builder(Course).id(1).naziv("ASFASF").opis("opissss").build(), Builder(Course).opis("opissss").id(1).opis("opissss").naziv("ASFASF").build(),
-    Builder(Course).id(1).naziv("ASFASF").opis("opissss").build(), Builder(Course).id(1).opis("opissss").naziv("ASFASF").build(), Builder(Course).id(1).opis("opissss").naziv("ASFASF").build()]
-    this.coursesToDisplay = this.chunkArray(this.courses, 3);
-   }
+
+  public coursesRepo: Course[] = [];
+  courses$: Observable<Course[]>;
+  filter = new FormControl('');
+
+  constructor(pipe: DecimalPipe) {
+    this.courses$ = this.filter.valueChanges.pipe(
+      startWith(''),
+      map(text => this.search(text,pipe))
+    );
+  }
+
+  private search(text: string, pipe: PipeTransform): Course[] {
+    return this.coursesRepo.filter(course => {
+      const term = text.toLowerCase();
+      return course['naziv'].toLowerCase().includes(term)
+          || course['autor'].toLowerCase().includes(term)
+          || course['kategorija'].toLowerCase().includes(term);
+    });
+  }
+
+  
 
   ngOnInit(): void {
-  }
-
-  test(course : Course){
-    console.log(course)
-  }
-
-  chunkArray(myArray : Course[], chunk_size: number){
-    var index = 0;
-    var arrayLength = myArray.length;
-    var tempArray = [];
-    var myChunk = [];
+    //todo service call
+    this.coursesRepo = [Builder(Course).id(1).naziv("ASFASF").autor("autorsss").kategorija("WEB").build(), Builder(Course).autor("autorsss").kategorija("BAZE").id(1).autor("autorsss").kategorija("ALGO").naziv("ASFASF").build(),
+    Builder(Course).id(1).naziv("ASFASFGGG").autor("autorsss").kategorija("SRPSKI").build(), Builder(Course).id(1).autor("autorsss").kategorija("MAT").naziv("ASFASF").build(), Builder(Course).id(1).autor("autorsss").kategorija("XMML").naziv("ASFASF").build()]
     
-    for (index = 0; index < arrayLength; index += chunk_size) {
-        myChunk = myArray.slice(index, index+chunk_size);
-        tempArray.push(myChunk);
-    }
-
-    return tempArray;
-
   }
+
 
 }
+
+

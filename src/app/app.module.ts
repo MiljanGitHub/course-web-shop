@@ -10,6 +10,9 @@ import { CoursesComponent } from './components/courses/courses.component';
 import { CourseComponent } from './components/course/course.component';
 import { TestComponent } from './components/test/test.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { UsersComponent } from './components/users/users.component';
+import { UserComponent } from './components/user/user.component';
+import { HomeComponent } from './components/home/home.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +20,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     NavbarComponent,
     CoursesComponent,
     CourseComponent,
-    TestComponent
+    TestComponent,
+    UsersComponent,
+    UserComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,

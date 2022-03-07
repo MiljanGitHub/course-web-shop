@@ -46,6 +46,8 @@ export class Validator {
     }
 
     private static isDatePickerSelected(datePicker: NgbDateStruct): datePicker is NgbDateStruct { 
-        return (<NgbDateStruct>datePicker).year !== undefined && (<NgbDateStruct>datePicker).month !== undefined && (<NgbDateStruct>datePicker).day !== undefined;
+        return (<NgbDateStruct>datePicker).year !== undefined && 
+               (<NgbDateStruct>datePicker).month !== undefined && 
+               (<NgbDateStruct>datePicker).day !== undefined;
     }
 }

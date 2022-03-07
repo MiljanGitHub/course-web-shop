@@ -21,6 +21,7 @@ export class CourseComponent implements OnInit {
   course!: Course;
   myForm: FormGroup;
   categories: String[] = ['Web programiranje', 'Objektno programiranje', 'Algoritmi', 'Strukture podataka', 'Baze podataka'];
+  
   constructor(public fb: FormBuilder, private router: Router, private activatedRoute: ActivatedRoute, private location: Location, private firebaseService : FirebaseService, private calendar: NgbCalendar) { 
 
   }
@@ -64,7 +65,7 @@ export class CourseComponent implements OnInit {
        // this.initReactiveForm();         
 
       } else {
-        alert("Morate poslati validne vredosti za identifikator i ime kursa. Bicete redirected!")
+        alert("Morate poslati validne vredosti za identifikator i ime kursa. Bicete preusmerenui!")
         this.location.replaceState("/courses");
       }
 

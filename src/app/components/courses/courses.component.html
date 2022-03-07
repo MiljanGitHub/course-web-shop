@@ -1,14 +1,32 @@
-<div class="container">
-    <div class="row text-center" *ngFor="let threeCourses of coursesToDisplay">
-        
-        <div class="card mb-3 col-lg-4 col-md-12 mt-4 px-1" *ngFor="let course of threeCourses">
-            <img src="https://i.imgur.com/IfoRpDP.png" class="card-img-top" alt="...">
-            <div class="card-body">
-              <h5 class="card-title">{{course['naziv']}}</h5>
-              <p class="card-text">{{course['opis']}}</p>
-              <button type="button" [routerLink]="['/courses', course['id'], course['naziv'] ]" class="btn btn-link">Visit course</button>
-            </div>
-        </div>
-       
+<h4>Search courses</h4>
+
+<form>
+  <div class="mb-3 row">
+    <label for="table-filtering-search" class="col-xs-3 col-sm-auto col-form-label">Full text search:</label>
+    <div class="col-md-3 col-md-auto">
+      <input id="table-filtering-search" placeholder="Pretraga po nazivu, kategoriji ili autoru" class="form-control" type="text" [formControl]="filter">
     </div>
-</div>
+  </div>
+</form>
+
+<table class="table table-striped">
+  <thead>
+  <tr>
+    <th scope="col">#</th>
+    <th scope="col">Naziv</th>
+    <th scope="col">Autor</th>
+    <th scope="col">Kategorija</th>
+  </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let course of courses$ | async; index as i" [routerLink]="['/courses', course['id'], course['naziv']]">
+      <th scope="row">{{ i + 1 }}</th>
+      <td>
+        <img [src]="'https://i.imgur.com/IfoRpDP.png'" class="me-2" style="width: 20px">
+        <ngb-highlight [result]="course['naziv']" [term]="filter.value"></ngb-highlight>
+      </td>
+      <td><ngb-highlight [result]="course['autor']" [term]="filter.value"></ngb-highlight></td>
+      <td><ngb-highlight [result]="course['kategorija']" [term]="filter.value"></ngb-highlight></td>
+    </tr>
+  </tbody>
+</table>
