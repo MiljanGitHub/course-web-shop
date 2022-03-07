@@ -1,5 +1,5 @@
 import { OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from "@angular/common";
 import { Course } from 'src/app/model/course';
 import { Component } from '@angular/core';
@@ -21,7 +21,7 @@ export class CourseComponent implements OnInit {
   course!: Course;
   myForm: FormGroup;
   categories: String[] = ['Web programiranje', 'Objektno programiranje', 'Algoritmi', 'Strukture podataka', 'Baze podataka'];
-  constructor(public fb: FormBuilder, private activatedRoute: ActivatedRoute, private location: Location, private firebaseService : FirebaseService, private calendar: NgbCalendar) { 
+  constructor(public fb: FormBuilder, private router: Router, private activatedRoute: ActivatedRoute, private location: Location, private firebaseService : FirebaseService, private calendar: NgbCalendar) { 
 
   }
 
@@ -42,21 +42,21 @@ export class CourseComponent implements OnInit {
         var isInt = Validator.isIntegerValue(courseId);
         if (!isInt){
           //if courseId' is not an integer value, redirect to 'courses' page
-          alert("Nije celobrojna vrednost. Bicete redirected!")
+          alert("Jedinstveni identifikator kursa nije celobrojna vrednost. Bicete preusmereni!")
           //todo
-          this.location.replaceState("/courses");
+          this.router.navigate(["/courses"]);
         }
 
         //check in service layer if Course exists for given Id
         this.course = this.firebaseService.getById(Number(courseId));
-        if (!(this.course instanceof Course)){
-          alert("Ne postoji dostupan course pod prosledjenom vrednoscu")
-          this.location.replaceState("/courses");
+        if (!(this.course instanceof Course) || this.course['id'].toString() != courseId){
+          alert("Ne postoji kurs sa identifikatorom: " + courseId + "\n" +  "Bicete preusmerenui")
+          this.router.navigate(["/courses"]);
         }
 
         //check if 'courseName' matches passed 'courseId'
         if (this.course.naziv != courseName){
-          alert("Prosledjeni kurs se ne poklapa sa imenom")
+          alert("Ime trazenog kursa se ne podudara sa imenom kursa iz baze podataka! Bicete preusmerenui")
           this.location.replaceState("/courses");
         }
 
@@ -64,7 +64,7 @@ export class CourseComponent implements OnInit {
        // this.initReactiveForm();         
 
       } else {
-        alert("Morate poslati validne vredosti za course i id. Bicete redirected!")
+        alert("Morate poslati validne vredosti za identifikator i ime kursa. Bicete redirected!")
         this.location.replaceState("/courses");
       }
 
@@ -113,23 +113,6 @@ export class CourseComponent implements OnInit {
     return {year: year,month: month, day: day };
   }
 
-  private initYear(datumIzmene : string) : number{
-    return Number(datumIzmene.substring(0,4))
-  }
-
-  private initMonth(datumIzmene : string) : number{
-    var twoDigitsNumber = datumIzmene.substring(5,7);
-    if (twoDigitsNumber.charAt(0) === '0') return Number(twoDigitsNumber.charAt(1));
-    return Number(twoDigitsNumber.charAt(0)+twoDigitsNumber.charAt(1))
-  }
-  
-  private initDay(datumIzmene : string) : number{
-    var twoDigitsNumber = datumIzmene.substring(8,10);
-    if (twoDigitsNumber.charAt(0) === '0') return Number(twoDigitsNumber.charAt(1));
-    return Number(twoDigitsNumber.charAt(0)+twoDigitsNumber.charAt(1))
-  }
-
-
   checkCategory(kategorija : string){
     if (Validator.isEmptySpaceOrWhiteSpace(kategorija)){
       this.categoryExist = false;
@@ -147,6 +130,26 @@ export class CourseComponent implements OnInit {
     console.log(this.course)
   }
 
+  deactivate(){
+    //todo
+    this.location.replaceState("/courses");
+  }
+
+  private initYear(datumIzmene : string) : number{
+    return Number(datumIzmene.substring(0,4))
+  }
+
+  private initMonth(datumIzmene : string) : number{
+    var twoDigitsNumber = datumIzmene.substring(5,7);
+    if (twoDigitsNumber.charAt(0) === '0') return Number(twoDigitsNumber.charAt(1));
+    return Number(twoDigitsNumber.charAt(0)+twoDigitsNumber.charAt(1))
+  }
+  
+  private initDay(datumIzmene : string) : number{
+    var twoDigitsNumber = datumIzmene.substring(8,10);
+    if (twoDigitsNumber.charAt(0) === '0') return Number(twoDigitsNumber.charAt(1));
+    return Number(twoDigitsNumber.charAt(0)+twoDigitsNumber.charAt(1))
+  }
 
 
   
