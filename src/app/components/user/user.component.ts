@@ -30,12 +30,18 @@ export class UserComponent implements OnInit {
         this.initLoginMode();
      } else if (this.mode == null && currentMode === Mode.EDIT){
         this.mode = Mode.EDIT.toString();
-        this.initEditMode();
-     } else if (this.mode == null && currentMode === Mode.REGISTER){
-        this.mode = Mode.REGISTER.toString();
         this.validateUrlParameters();
+        this.user = Builder(User).id(1).korisnickoIme("pera").lozinka("123").email("pera@gmail.com").ime("Petar").prezime("Petrovic").datumRodjenja("2022-12-12").adresa("asfa").telefon("afs00").build();
+
+        this.initEditMode();
+ 
+     } else if (this.mode == null && currentMode === Mode.REGISTER){
+      
+        this.mode = Mode.REGISTER.toString();
+        
         this.initRegisterMode();
-     }
+        
+      }
     });
     
   }
@@ -78,12 +84,40 @@ export class UserComponent implements OnInit {
     this.userForm = this.fb.group({
       korisnickoIme: [this.user['korisnickoIme'], [Validators.required, Validators.minLength(3), Validator.cannotContainWhitespaceOnly]],
       lozinka:       [this.user['lozinka'], [Validators.required, Validators.minLength(5), Validator.cannotContainWhitespaceOnly]],
-      email:         [this.user['email'], [Validators.required, Validators.email]]
+      email:         [this.user['email'], [Validators.required, Validators.email]],
+      ime:           [this.user['ime'], [ Validators.minLength(5), Validator.cannotContainWhitespaceOnly]],
+      prezime:       [this.user['prezime'], [ Validators.minLength(5), Validator.cannotContainWhitespaceOnly]],
+      adresa:        [this.user['adresa'], [ Validators.minLength(5), Validator.cannotContainWhitespaceOnly]],
+      telefon:       [this.user['telefon'], [ Validators.minLength(7), Validator.cannotContainWhitespaceOnly]],
+      datumRodjenja:  [this.initFormControleValue(), [Validators.required, Validator.invalidDate]]
     })
   }
 
   private validateUrlParameters(){
-    
+
+  }
+
+  initFormControleValue() : any{
+    var year = this.initYear(this.user['datumRodjenja']);
+    var month = this.initMonth(this.user['datumRodjenja'])
+    var day = this.initDay(this.user['datumRodjenja'])
+    return {year: year,month: month, day: day };
+  }
+
+  private initYear(datumRodjenja : string) : number{
+    return Number(datumRodjenja.substring(0,4))
+  }
+
+  private initMonth(datumRodjenja : string) : number{
+    var twoDigitsNumber = datumRodjenja.substring(5,7);
+    if (twoDigitsNumber.charAt(0) === '0') return Number(twoDigitsNumber.charAt(1));
+    return Number(twoDigitsNumber.charAt(0)+twoDigitsNumber.charAt(1))
+  }
+  
+  private initDay(datumRodjenja : string) : number{
+    var twoDigitsNumber = datumRodjenja.substring(8,10);
+    if (twoDigitsNumber.charAt(0) === '0') return Number(twoDigitsNumber.charAt(1));
+    return Number(twoDigitsNumber.charAt(0)+twoDigitsNumber.charAt(1))
   }
 
 
