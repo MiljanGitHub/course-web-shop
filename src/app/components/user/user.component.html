@@ -1,5 +1,5 @@
 <ng-container *ngIf="mode === 'login'">
-    <form [formGroup]="userForm" (ngSubmit)="submitForm()" class="needs-validation" novalidate>
+    <form [formGroup]="userForm"  class="needs-validation" novalidate>
         <div class="form-group">
           <label for="usernameUser">Username</label>
           <input class="form-control" formControlName="korisnickoIme" id="usernameUser"  placeholder="Enter username" required>
@@ -40,7 +40,7 @@
 
 
 <ng-container *ngIf="mode === 'register'">
-    <form [formGroup]="userForm" (ngSubmit)="submitForm()" class="needs-validation" novalidate>
+    <form [formGroup]="userForm" class="needs-validation" novalidate>
         <div class="form-group">
           <label for="usernameUser">Username</label>
           <input class="form-control" formControlName="korisnickoIme" id="usernameUser"  placeholder="Enter username" required>
@@ -98,12 +98,12 @@
     <div class="container">
         <div class="row">
             <div class="form-inline justify-content-center">
-                <form [formGroup]="userForm" (ngSubmit)="submitForm()" class="row g-3 needs-validation" novalidate>
+                <form [formGroup]="userForm"  class="row g-3 needs-validation" novalidate>
                     <div class="col-md-4">
                       <label for="id" class="form-label">ID</label>
                       <input type="text" class="form-control" disabled id="id" [value]="user['id']">
                     </div>
-                    
+                    <!-- Id, Korisnicko ime, Email  -->
                     <div class="col-md-4">
                       <label for="korisnickoIme" class="form-label">Korisnicko ime</label>
                       <input type="text" class="form-control" formControlName="korisnickoIme" id="korisnickoIme" required>
@@ -113,7 +113,7 @@
                             This field is required.
                         </small>
                         <small class="text-danger" *ngIf="userForm.get('korisnickoIme').hasError('minlength')">
-                            The minimum length for this field is {{userForm.get('naziv').errors.minlength.requiredLength}} characters.
+                            The minimum length for this field is {{userForm.get('korisnickoIme').errors.minlength.requiredLength}} characters.
                         </small>
                         <small class="text-danger" *ngIf="userForm.get('korisnickoIme').hasError('cannotContainWhitespaceOnly')">
                           This field must not contain whitespaces.
@@ -137,7 +137,7 @@
                       </div>                   
                     </div>
                     
-                    <!-- red 2  ime prez lozinka--> 
+                    <!-- red 2  Ime, Prezime i Lozinka--> 
                     <div class="col-md-4">
                         <label for="ime" class="form-label">Ime</label>
                         <input type="text" class="form-control" id="ime" [value]="user['ime']">
@@ -188,7 +188,7 @@
                         </div>                   
                       </div>
             
-                      <!-- red 3  adresa telefon dob--> 
+                      <!-- red 3 Adresa, Telefon i Datum rodjenja --> 
                       <div class="col-md-4">
                         <label for="adresa" class="form-label">Adresa</label>
                         <input type="text" class="form-control" formControlName="adresa" id="adresa" [value]="user['adresa']">
@@ -225,14 +225,19 @@
                             <input type="text" class="form-control"  formControlName="datumRodjenja"   name="dp"  ngbDatepicker #d="ngbDatepicker">
                             <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
                             <div *ngIf="userForm.dirty">
-                              <small class="text-danger" *ngIf="userForm.get('datumRodjenja').hasError('required')">
-                                This field is required.
-                              </small>
+                              
                               <small class="text-danger" *ngIf="userForm.get('datumRodjenja').hasError('invalidDate')">
                                 Date must be in valid format.
                               </small>
                             </div> 
                         </div>            
+                      </div>
+
+                      <div class="col-12">
+                        <button class="btn btn-primary" (click)="submitFormEdit()" [disabled]="userForm.invalid || !userForm.dirty" type="submit">Submit form</button>
+                      </div>
+                      <div class="col-12">
+                        <button class="btn btn-primary" (click)="deactivateUser()">Deactivate user</button>
                       </div>
                 </form>
 

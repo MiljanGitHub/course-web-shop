@@ -39,7 +39,7 @@ export class CoursesComponent implements OnInit {
 
   ngOnInit(): void {
     //todo service call
-    this.coursesRepo = [Builder(Course).id(1).naziv("ASFASF").autor("autorsss").kategorija("WEB").build(), Builder(Course).autor("autorsss").kategorija("BAZE").id(1).autor("autorsss").kategorija("ALGO").naziv("ASFASF").build(),
+    this.coursesRepo = [Builder(Course).id(1).naziv("matematika 1").autor("autorsss").kategorija("WEB").build(), Builder(Course).autor("autorsss").kategorija("BAZE").id(1).autor("autorsss").kategorija("ALGO").naziv("ASFASF").build(),
     Builder(Course).id(1).naziv("ASFASFGGG").autor("autorsss").kategorija("SRPSKI").build(), Builder(Course).id(1).autor("autorsss").kategorija("MAT").naziv("ASFASF").build(), Builder(Course).id(1).autor("autorsss").kategorija("XMML").naziv("ASFASF").build()]
     
   }

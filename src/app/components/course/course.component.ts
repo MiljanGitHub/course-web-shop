@@ -49,7 +49,7 @@ export class CourseComponent implements OnInit {
         }
 
         //check in service layer if Course exists for given Id
-        this.course = this.firebaseService.getById(Number(courseId));
+        this.course = this.firebaseService.getCourseById(Number(courseId));
         if (!(this.course instanceof Course) || this.course['id'].toString() != courseId){
           alert("Ne postoji kurs sa identifikatorom: " + courseId + "\n" +  "Bicete preusmerenui")
           this.router.navigate(["/courses"]);
@@ -58,33 +58,20 @@ export class CourseComponent implements OnInit {
         //check if 'courseName' matches passed 'courseId'
         if (this.course.naziv != courseName){
           alert("Ime trazenog kursa se ne podudara sa imenom kursa iz baze podataka! Bicete preusmerenui")
-          this.location.replaceState("/courses");
+          this.router.navigate(["/courses"]);
         }
 
         //if everyting is ok
-       // this.initReactiveForm();         
+        this.checkCategory(this.course['kategorija'])
+        this.initReactiveForm();        
 
       } else {
         alert("Morate poslati validne vredosti za identifikator i ime kursa. Bicete preusmerenui!")
-        this.location.replaceState("/courses");
+        this.router.navigate(["/courses"]);
       }
 
-      this.course = Builder(Course).id(1)
-                                   .naziv("a")
-                                   .autor("")
-                                   .opis("opissss")
-                                   .slika("https://i.imgur.com/IfoRpDP.png")
-                                   .brojKorisnika(32)
-                                   .brojLekcija(15)
-                                   .kategorija("aaa")
-                                   .prosecnaOcena(3.2)
-                                   .cena(3200)
-                                   .jezik("Engleski")
-                                   .datumIzmene("2021-04-15")
-                                   .sertifikovan(true)
-                                   .build()
-             this.checkCategory(this.course['kategorija'])
-             this.initReactiveForm();            
+      
+                       
      
     });
     

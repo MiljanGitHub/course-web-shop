@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Builder } from 'builder-pattern';
 import { Mode } from 'src/app/model/mode-user'; 
 import { User } from 'src/app/model/user';
+import { FirebaseService } from 'src/app/services/firebase-service.service';
 import { PassingDataService } from 'src/app/services/passing-data.service';
 import { Validator } from 'src/app/utils/validators';
 
@@ -18,7 +19,7 @@ export class UserComponent implements OnInit {
   mode: string = null;
   userForm: FormGroup;
 
-  constructor(public fb: FormBuilder, private passingDataService: PassingDataService,  private router: Router, private activatedRoute: ActivatedRoute) { 
+  constructor(private firebaseService : FirebaseService, public fb: FormBuilder, private passingDataService: PassingDataService,  private router: Router, private activatedRoute: ActivatedRoute) { 
 
   }
 
@@ -31,10 +32,7 @@ export class UserComponent implements OnInit {
      } else if (this.mode == null && currentMode === Mode.EDIT){
         this.mode = Mode.EDIT.toString();
         this.validateUrlParameters();
-        this.user = Builder(User).id(1).korisnickoIme("pera").lozinka("123").email("pera@gmail.com").ime("Petar").prezime("Petrovic").datumRodjenja("2022-12-12").adresa("asfa").telefon("afs00").build();
-
         this.initEditMode();
- 
      } else if (this.mode == null && currentMode === Mode.REGISTER){
       
         this.mode = Mode.REGISTER.toString();
@@ -62,6 +60,19 @@ export class UserComponent implements OnInit {
   }
 
   submitFormEdit(){
+    //If this metohd is invoked, that means that edit form is validated
+    this.user.korisnickoIme = this.userForm.get('korisnickoIme').value;
+    this.user.email = this.userForm.get('email').value;
+    this.user.ime = this.userForm.get('ime').value;
+    this.user.prezime = this.userForm.get('prezime').value;
+    this.user.lozinka = this.userForm.get('lozinka').value;
+    this.user.lozinka = this.userForm.get('lozinka').value;
+    this.user.telefon = this.userForm.get('telefon').value;
+    this.user.datumRodjenja = this.userForm.get('datumRodjenja').value;
+    alert("Edit user on backend: " + JSON.stringify(this.user));
+  }
+
+  deactivateUser(){
 
   }
 
@@ -82,19 +93,51 @@ export class UserComponent implements OnInit {
 
   private initEditMode(){
     this.userForm = this.fb.group({
-      korisnickoIme: [this.user['korisnickoIme'], [Validators.required, Validators.minLength(3), Validator.cannotContainWhitespaceOnly]],
-      lozinka:       [this.user['lozinka'], [Validators.required, Validators.minLength(5), Validator.cannotContainWhitespaceOnly]],
-      email:         [this.user['email'], [Validators.required, Validators.email]],
-      ime:           [this.user['ime'], [ Validators.minLength(5), Validator.cannotContainWhitespaceOnly]],
-      prezime:       [this.user['prezime'], [ Validators.minLength(5), Validator.cannotContainWhitespaceOnly]],
-      adresa:        [this.user['adresa'], [ Validators.minLength(5), Validator.cannotContainWhitespaceOnly]],
-      telefon:       [this.user['telefon'], [ Validators.minLength(7), Validator.cannotContainWhitespaceOnly]],
-      datumRodjenja:  [this.initFormControleValue(), [Validators.required, Validator.invalidDate]]
+      korisnickoIme: [this.user['korisnickoIme'],    [ Validators.required,     Validators.minLength(3), Validator.cannotContainWhitespaceOnly]],
+      lozinka:       [this.user['lozinka'],          [ Validators.required,     Validators.minLength(5), Validator.cannotContainWhitespaceOnly]],
+      email:         [this.user['email'],            [ Validators.required,     Validators.email]],
+      ime:           [this.user['ime'],              [ Validators.minLength(5), Validator.cannotContainWhitespaceOnly]],
+      prezime:       [this.user['prezime'],          [ Validators.minLength(5), Validator.cannotContainWhitespaceOnly]],
+      adresa:        [this.user['adresa'],           [ Validators.minLength(5), Validator.cannotContainWhitespaceOnly]],
+      telefon:       [this.user['telefon'],          [ Validators.minLength(7), Validator.cannotContainWhitespaceOnly]],
+      datumRodjenja: [this.initFormControleValue(),  [                          Validator.invalidDate]]
     })
   }
 
   private validateUrlParameters(){
+  this.activatedRoute.paramMap.subscribe(params => {
+      var userId = params.get('userIdPlaceholder');
+      var username = params.get('usernamePlaceholder')
 
+      if (userId && username) {
+ 
+        //check if 'userId' is an integer value
+        var isInt = Validator.isIntegerValue(userId);
+        if (!isInt){
+          //if 'userId' is not an integer value, redirect to 'users' page
+          alert("Jedinstveni identifikator korisnika nije celobrojna vrednost. Bicete preusmereni!")
+          this.router.navigate(["/users"]);
+        }
+
+        //check in service layer if User exists for given Id
+        this.user = this.firebaseService.getUserById(Number(userId));
+        if (!(this.user instanceof User) || this.user['id'].toString() != userId){
+          alert("Ne postoji korisnik sa identifikatorom: " + userId + "\n" +  "Bicete preusmerenui")
+          this.router.navigate(["/users"]);
+        }
+
+        //check if 'username' matches passed 'userId'
+        if (this.user.korisnickoIme != username){
+          alert("Ime trazenog korisnika se ne podudara sa imenom korisnika iz baze podataka za prosledjeni identifikator! Bicete preusmerenui")
+          this.router.navigate(["/users"]);
+        }     
+
+      } else {
+        alert("Morate poslati validne vredosti za identifikator i ime korisnika. Bicete preusmerenui!")
+        this.router.navigate(["/users"]);
+      }
+
+    });
   }
 
   initFormControleValue() : any{
