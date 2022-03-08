@@ -73,7 +73,10 @@ export class UserComponent implements OnInit {
   }
 
   deactivateUser(){
-
+    var userId = this.user['id'];
+    this.firebaseService.deactivateUser(userId);
+    alert("User is deactivated. You will be redirecated to home page!")
+    this.router.navigate(["/home"]);
   }
 
   private initLoginMode(){

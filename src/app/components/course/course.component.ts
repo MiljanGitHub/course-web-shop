@@ -23,7 +23,7 @@ export class CourseComponent implements OnInit {
   categories: String[] = ['Web programiranje', 'Objektno programiranje', 'Algoritmi', 'Strukture podataka', 'Baze podataka'];
   
   constructor(public fb: FormBuilder, private router: Router, private activatedRoute: ActivatedRoute, private location: Location, private firebaseService : FirebaseService, private calendar: NgbCalendar) { 
-
+      //https://coursewebshop-default-rtdb.firebaseio.com/
   }
 
 
@@ -45,20 +45,20 @@ export class CourseComponent implements OnInit {
           //if courseId' is not an integer value, redirect to 'courses' page
           alert("Jedinstveni identifikator kursa nije celobrojna vrednost. Bicete preusmereni!")
           //todo
-          this.router.navigate(["/courses"]);
+          this.router.navigate(["/home"]);
         }
 
         //check in service layer if Course exists for given Id
         this.course = this.firebaseService.getCourseById(Number(courseId));
         if (!(this.course instanceof Course) || this.course['id'].toString() != courseId){
           alert("Ne postoji kurs sa identifikatorom: " + courseId + "\n" +  "Bicete preusmerenui")
-          this.router.navigate(["/courses"]);
+          this.router.navigate(["/home"]);
         }
 
         //check if 'courseName' matches passed 'courseId'
         if (this.course.naziv != courseName){
           alert("Ime trazenog kursa se ne podudara sa imenom kursa iz baze podataka! Bicete preusmerenui")
-          this.router.navigate(["/courses"]);
+          this.router.navigate(["/home"]);
         }
 
         //if everyting is ok
@@ -67,12 +67,9 @@ export class CourseComponent implements OnInit {
 
       } else {
         alert("Morate poslati validne vredosti za identifikator i ime kursa. Bicete preusmerenui!")
-        this.router.navigate(["/courses"]);
+        this.router.navigate(["/home"]);
       }
 
-      
-                       
-     
     });
     
   }
@@ -119,8 +116,10 @@ export class CourseComponent implements OnInit {
   }
 
   deactivate(){
-    //todo
-    this.location.replaceState("/courses");
+    var courseId = this.course['id'];
+    this.firebaseService.deactivateCourse(courseId);
+    alert("Course is deactivated. You will be redirecated to home page!")
+    this.router.navigate(["/home"]);
   }
 
   private initYear(datumIzmene : string) : number{

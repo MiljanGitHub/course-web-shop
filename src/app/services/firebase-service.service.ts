@@ -31,4 +31,12 @@ export class FirebaseService {
     return Builder(User).id(1).korisnickoIme("pera").lozinka("123").email("pera@gmail.com").ime("Petar").prezime("Petrovic").datumRodjenja("2022-12-12").adresa("asfa").telefon("afs00").build();
 
   }
+
+  public  deactivateUser(userId: Number){
+
+  }
+
+  public  deactivateCourse(courseId: Number){
+
+  }
 }
