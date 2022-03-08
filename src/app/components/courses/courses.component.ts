@@ -10,8 +10,7 @@ import { map, startWith } from 'rxjs/operators';
 @Component({
   selector: 'app-courses',
   templateUrl: './courses.component.html',
-  styleUrls: ['./courses.component.css'],
-  providers: [DecimalPipe]
+  styleUrls: ['./courses.component.css']
 
 })
 export class CoursesComponent implements OnInit {
@@ -20,14 +19,14 @@ export class CoursesComponent implements OnInit {
   courses$: Observable<Course[]>;
   filter = new FormControl('');
 
-  constructor(pipe: DecimalPipe) {
+  constructor() {
     this.courses$ = this.filter.valueChanges.pipe(
       startWith(''),
-      map(text => this.search(text,pipe))
+      map(text => this.search(text))
     );
   }
 
-  private search(text: string, pipe: PipeTransform): Course[] {
+  private search(text: string): Course[] {
     return this.coursesRepo.filter(course => {
       const term = text.toLowerCase();
       return course['naziv'].toLowerCase().includes(term)

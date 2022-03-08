@@ -1,10 +1,10 @@
-<p>You can do filter table data, in this case with observables and our <code>NgbHighlight</code> component used in Typeahead</p>
+<h4>Search users</h4>
 
 <form>
   <div class="mb-3 row">
     <label for="table-filtering-search" class="col-xs-3 col-sm-auto col-form-label">Full text search:</label>
-    <div class="col-xs-3 col-sm-auto">
-      <input id="table-filtering-search" class="form-control" type="text" [formControl]="filter">
+    <div class="col-md-3 col-md-auto">
+      <input id="table-filtering-search"  placeholder="Pretraga po korisnickom imenu, email-u, imenu ili prezimenu" class="form-control" type="text" [formControl]="filter">
     </div>
   </div>
 </form>
@@ -13,20 +13,19 @@
   <thead>
   <tr>
     <th scope="col">#</th>
-    <th scope="col">Country</th>
-    <th scope="col">Area</th>
-    <th scope="col">Population</th>
+    <th scope="col">Korisnicko ime</th>
+    <th scope="col">Email</th>
+    <th scope="col">Ime</th>
+    <th scope="col">Prezime</th>
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let country of countries$ | async; index as i">
+  <tr *ngFor="let user of users$ | async; index as i" (click)="setUserComponentMode()" [routerLink]="['/users', user['id'], user['korisnickoIme']]">
     <th scope="row">{{ i + 1 }}</th>
-    <td>
-      <img [src]="'https://i.imgur.com/IfoRpDP.png'" class="me-2" style="width: 20px">
-      <ngb-highlight  [accentSensitive]="true" [result]="country['name']" [term]="filter.value"></ngb-highlight>
-    </td>
-    <td><ngb-highlight [accentSensitive]="true" [result]="country.area | number" [term]="filter.value"></ngb-highlight></td>
-    <td><ngb-highlight [accentSensitive]="true" [result]="country.population | number" [term]="filter.value"></ngb-highlight></td>
+    <td><ngb-highlight  [accentSensitive]="true"  [result]="user['korisnickoIme']"  [term]="filter.value"></ngb-highlight></td>
+    <td><ngb-highlight  [accentSensitive]="true"  [result]="user['email']"          [term]="filter.value"></ngb-highlight></td>
+    <td><ngb-highlight  [accentSensitive]="true"  [result]="user['ime']"            [term]="filter.value"></ngb-highlight></td>
+    <td><ngb-highlight  [accentSensitive]="true"  [result]="user['prezime']"        [term]="filter.value"></ngb-highlight></td>
   </tr>
   </tbody>
 </table>
