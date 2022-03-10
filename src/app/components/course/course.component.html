@@ -1,11 +1,13 @@
-<div class="container">
+<div *ngIf="myForm && course">
+  <div class="container">
     <div class="row">
         <div class="form-inline justify-content-center">
-            <form [formGroup]="myForm" (ngSubmit)="submitForm()" class="row g-3 needs-validation" novalidate>
+            <form [formGroup]="myForm"  class="row g-3 needs-validation" novalidate>
 
                 <div class="col-md-4">
-                  <label for="id" class="form-label">ID</label>
-                  <input type="text" class="form-control" disabled id="id" [value]="course['id']" required>
+                  <label for="idCourse" class="form-label">ID</label>
+                  <!-- [value]="course['id']" formControlName="id" -->
+                  <input type="text" class="form-control"   [value]="course['id']"  disabled id="idCourse" >
                 </div>
                 
                 <div class="col-md-4">
@@ -109,8 +111,8 @@
 
                 </div>
                 <div class="col-md-3">
-                  <label for="validationCustom07"class="form-label">Prosecna ocena</label>
-                  <input type="text"  value="3.5"  disabled class="form-control" id="validationCustom07" required>
+                  <label for="prosecnaOcena"class="form-label">Prosecna ocena</label>
+                  <input type="text" [value]="course['prosecnaOcena']"  disabled class="form-control" id="prosecnaOcena" required>
                 </div>
 
                 <div class="col-md-4">
@@ -159,7 +161,8 @@
 
                 <div class="col-12">
                   <div class="form-check">
-                    <input class="form-check-input"  formControlName="sertifikovan" type="checkbox" checked="course['sertifikovan']" id="sertifikovan">
+                    <!-- checked="course['sertifikovan']" -->
+                    <input class="form-check-input"  formControlName="sertifikovan" type="checkbox" checked="true"  id="sertifikovan">
                     <label class="form-check-label" for="sertifikovan">
                       Sertifikovan
                     </label>
@@ -167,7 +170,7 @@
                 </div>
 
                 <div class="col-12">
-                  <button class="btn btn-primary" [disabled]="myForm.invalid || !myForm.dirty" type="submit">Submit form</button>
+                  <button class="btn btn-primary" [disabled]="myForm.invalid || !myForm.dirty" (click)="submitForm()">Submit form</button>
                 </div>
 
                 <div class="col-12">
@@ -182,4 +185,5 @@
               </form>
         </div>
     </div>
+</div>
 </div>

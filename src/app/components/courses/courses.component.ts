@@ -6,6 +6,7 @@ import { DecimalPipe } from '@angular/common';
 import { FormControl } from '@angular/forms';
 import { Observable, pipe } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+import { FirebaseService } from 'src/app/services/firebase-service.service';
 
 @Component({
   selector: 'app-courses',
@@ -19,11 +20,8 @@ export class CoursesComponent implements OnInit {
   courses$: Observable<Course[]>;
   filter = new FormControl('');
 
-  constructor() {
-    this.courses$ = this.filter.valueChanges.pipe(
-      startWith(''),
-      map(text => this.search(text))
-    );
+  constructor(private firebaseService:  FirebaseService) {
+   
   }
 
   private search(text: string): Course[] {
@@ -39,8 +37,24 @@ export class CoursesComponent implements OnInit {
 
   ngOnInit(): void {
     //todo service call
-    this.coursesRepo = [Builder(Course).id(1).naziv("matematika 1").autor("autorsss").kategorija("WEB").build(), Builder(Course).autor("autorsss").kategorija("BAZE").id(1).autor("autorsss").kategorija("ALGO").naziv("ASFASF").build(),
-    Builder(Course).id(1).naziv("ASFASFGGG").autor("autorsss").kategorija("SRPSKI").build(), Builder(Course).id(1).autor("autorsss").kategorija("MAT").naziv("ASFASF").build(), Builder(Course).id(1).autor("autorsss").kategorija("XMML").naziv("ASFASF").build()]
+    //this.coursesRepo =
+    
+    this.firebaseService.getAllCourses().subscribe(courses => {
+      
+     this.coursesRepo = courses;
+      
+      //[ Builder(User).id("1").korisnickoIme("pera").lozinka("123").email("pera@gmail.com").ime("Petar").prezime("Petrovic").datumRodjenja("2022-12-12").adresa("asfa").telefon("afs00").build()]
+    
+
+      this.courses$ = this.filter.valueChanges.pipe(
+        startWith(''),
+        map(text => this.search(text))
+      );
+    })
+    
+   
+    //[Builder(Course).id("1").naziv("matematika 1").autor("autorsss").kategorija("WEB").build(), Builder(Course).autor("autorsss").kategorija("BAZE").id("1").autor("autorsss").kategorija("ALGO").naziv("ASFASF").build(),
+    //Builder(Course).id("1").naziv("ASFASFGGG").autor("autorsss").kategorija("SRPSKI").build(), Builder(Course).id("1").autor("autorsss").kategorija("MAT").naziv("ASFASF").build(), Builder(Course).id("1").autor("autorsss").kategorija("XMML").naziv("ASFASF").build()]
     
   }
 

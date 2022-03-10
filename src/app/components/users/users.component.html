@@ -20,7 +20,7 @@
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let user of users$ | async; index as i" (click)="setUserComponentMode()" [routerLink]="['/users', user['id'], user['korisnickoIme']]">
+  <tr *ngFor="let user of users$ | async; index as i" (click)="setUserComponentMode()" [routerLink]="['/users', user['key']]">
     <th scope="row">{{ i + 1 }}</th>
     <td><ngb-highlight  [accentSensitive]="true"  [result]="user['korisnickoIme']"  [term]="filter.value"></ngb-highlight></td>
     <td><ngb-highlight  [accentSensitive]="true"  [result]="user['email']"          [term]="filter.value"></ngb-highlight></td>

@@ -13,8 +13,8 @@ const routes: Routes = [
   {path: 'test', component: TestComponent},
   {path: 'courses', component: CoursesComponent},
   {path: 'users', component: UsersComponent},
-  {path: 'users/:userIdPlaceholder/:usernamePlaceholder', component: UserComponent},
-  {path: 'courses/:courseIdPlaceholder/:courseNamePlaceholder', component: CourseComponent}
+  {path: 'users/:userIdPlaceholder', component: UserComponent},
+  {path: 'courses/:courseIdPlaceholder', component: CourseComponent}
 //  { path: '**', component:  CoursesComponent}
 
 ];

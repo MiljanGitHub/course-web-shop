@@ -18,27 +18,33 @@ export class UserComponent implements OnInit {
   user: User;
   mode: string = null;
   userForm: FormGroup;
+  userHasBeenDeleted = false;
 
   constructor(private firebaseService : FirebaseService, public fb: FormBuilder, private passingDataService: PassingDataService,  private router: Router, private activatedRoute: ActivatedRoute) { 
 
   }
 
   ngOnInit(): void {
-
     this.passingDataService.currentMode.subscribe(currentMode => {
-     if (this.mode == null && currentMode === Mode.LOGIN){
+
+      if (this.mode == null && currentMode === Mode.LOGIN){
         this.mode = Mode.LOGIN.toString();
         this.initLoginMode();
-     } else if (this.mode == null && currentMode === Mode.EDIT){
+      } else if (this.mode == null && currentMode === Mode.EDIT){
         this.mode = Mode.EDIT.toString();
         this.validateUrlParameters();
-        this.initEditMode();
-     } else if (this.mode == null && currentMode === Mode.REGISTER){
-      
+       
+      } else if (this.mode == null && currentMode === Mode.REGISTER){
         this.mode = Mode.REGISTER.toString();
-        
         this.initRegisterMode();
         
+      } else{
+        if (currentMode == null){
+          this.mode = Mode.EDIT.toString();
+          this.validateUrlParameters();
+         
+        } 
+       
       }
     });
     
@@ -66,17 +72,36 @@ export class UserComponent implements OnInit {
     this.user.ime = this.userForm.get('ime').value;
     this.user.prezime = this.userForm.get('prezime').value;
     this.user.lozinka = this.userForm.get('lozinka').value;
-    this.user.lozinka = this.userForm.get('lozinka').value;
+    this.user.adresa = this.userForm.get('adresa').value;
     this.user.telefon = this.userForm.get('telefon').value;
-    this.user.datumRodjenja = this.userForm.get('datumRodjenja').value;
-    alert("Edit user on backend: " + JSON.stringify(this.user));
+    this.user.datumRodjenja = this.userForm.get('datumRodjenja').value['year'] + "-" + 
+                              this.reformat(this.userForm.get('datumRodjenja').value["month"]) + "-" + 
+                              this.reformat(this.userForm.get('datumRodjenja').value['day']);
+
+    
+    this.firebaseService.updateUser(this.user).then(() => {
+    
+      alert("User have been successfuly edited.");
+    });
   }
 
-  deactivateUser(){
-    var userId = this.user['id'];
-    this.firebaseService.deactivateUser(userId);
-    alert("User is deactivated. You will be redirecated to home page!")
-    this.router.navigate(["/home"]);
+  private reformat(dayOrMonth : string){
+
+    if (dayOrMonth.toString().length == 1) return "0".concat(dayOrMonth);
+
+    return dayOrMonth;
+  }
+
+  public deactivateUser(){
+    var userId = this.user['key'];
+    this.userHasBeenDeleted = true;
+    this.user.id = "-1";
+    
+    this.firebaseService.deactivateUser(userId).then(() => {
+      this.userHasBeenDeleted = true;
+      this.user.id = "-1";
+    }).catch(err => console.log(err));
+   
   }
 
   private initLoginMode(){
@@ -109,36 +134,45 @@ export class UserComponent implements OnInit {
 
   private validateUrlParameters(){
   this.activatedRoute.paramMap.subscribe(params => {
-      var userId = params.get('userIdPlaceholder');
-      var username = params.get('usernamePlaceholder')
+      
+        var userId = params.get('userIdPlaceholder');
+        if (userId) {
+  
+          //check in service layer if User exists for given Id
+          
+          this.firebaseService.getUserById(userId).subscribe(user => {
+            if ( this.userHasBeenDeleted && this.user != null && this.user != undefined && this.user.id.toString() === '-1' ){
+              alert("User is deactivated. You will be redirecated to the Users page!")
+              this.router.navigate(["/users"]);
+              return;
+            }
+            if (user === null || user === undefined){
+              alert("Ne postoji korisnik sa identifikatorom: " + userId + "\n" +  "Bicete preusmereni.")
+              this.router.navigate(["/users"]);
+              return;
+            }
 
-      if (userId && username) {
- 
-        //check if 'userId' is an integer value
-        var isInt = Validator.isIntegerValue(userId);
-        if (!isInt){
-          //if 'userId' is not an integer value, redirect to 'users' page
-          alert("Jedinstveni identifikator korisnika nije celobrojna vrednost. Bicete preusmereni!")
+            this.user = Builder(User).key(userId)
+                                     .korisnickoIme(user['korisnickoIme'])
+                                     .lozinka(user['lozinka'])
+                                     .email(user['email'])
+                                     .ime(user['ime'])
+                                     .prezime(user['prezime'])
+                                     .datumRodjenja(user['datumRodjenja'])
+                                     .adresa(user['adresa'])
+                                     .telefon(user['telefon'])
+                                     .build();
+            this.initEditMode();
+          });  
+           
+  
+        } else {
+          alert("Morate poslati validne vredosti za identifikator korisnika. Bicete preusmerenui!")
           this.router.navigate(["/users"]);
+          return;
         }
-
-        //check in service layer if User exists for given Id
-        this.user = this.firebaseService.getUserById(Number(userId));
-        if (!(this.user instanceof User) || this.user['id'].toString() != userId){
-          alert("Ne postoji korisnik sa identifikatorom: " + userId + "\n" +  "Bicete preusmerenui")
-          this.router.navigate(["/users"]);
-        }
-
-        //check if 'username' matches passed 'userId'
-        if (this.user.korisnickoIme != username){
-          alert("Ime trazenog korisnika se ne podudara sa imenom korisnika iz baze podataka za prosledjeni identifikator! Bicete preusmerenui")
-          this.router.navigate(["/users"]);
-        }     
-
-      } else {
-        alert("Morate poslati validne vredosti za identifikator i ime korisnika. Bicete preusmerenui!")
-        this.router.navigate(["/users"]);
-      }
+      
+      
 
     });
   }

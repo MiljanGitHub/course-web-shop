@@ -19,7 +19,7 @@
   </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let course of courses$ | async; index as i" [routerLink]="['/courses', course['id'], course['naziv']]">
+    <tr *ngFor="let course of courses$ | async; index as i" [routerLink]="['/courses', course['id']]">
       <th scope="row">{{ i + 1 }}</th>
       <td>
         <img [src]="'https://i.imgur.com/IfoRpDP.png'" class="me-2" style="width: 20px">

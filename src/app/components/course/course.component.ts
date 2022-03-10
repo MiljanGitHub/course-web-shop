@@ -20,54 +20,47 @@ export class CourseComponent implements OnInit {
   categoryExist: boolean;
   course!: Course;
   myForm: FormGroup;
+  courseHasBeenDeleted = false;
   categories: String[] = ['Web programiranje', 'Objektno programiranje', 'Algoritmi', 'Strukture podataka', 'Baze podataka'];
   
   constructor(public fb: FormBuilder, private router: Router, private activatedRoute: ActivatedRoute, private location: Location, private firebaseService : FirebaseService, private calendar: NgbCalendar) { 
-      //https://coursewebshop-default-rtdb.firebaseio.com/
+   
+
   }
 
 
 
 
   ngOnInit(): void {
+
     this.activatedRoute.paramMap.subscribe(params => {
       var courseId = params.get('courseIdPlaceholder');
-      var courseName = params.get('courseNamePlaceholder')
-      
-      //some custom validation and simple checks...
 
       //check if 'courseId' is valid value
-      if (courseId && courseName) {
- 
-        //check if 'courseId' is an integer value
-        var isInt = Validator.isIntegerValue(courseId);
-        if (!isInt){
-          //if courseId' is not an integer value, redirect to 'courses' page
-          alert("Jedinstveni identifikator kursa nije celobrojna vrednost. Bicete preusmereni!")
-          //todo
-          this.router.navigate(["/home"]);
-        }
-
+      if (courseId) {
+        console.log(this.courseHasBeenDeleted)
         //check in service layer if Course exists for given Id
-        this.course = this.firebaseService.getCourseById(Number(courseId));
-        if (!(this.course instanceof Course) || this.course['id'].toString() != courseId){
-          alert("Ne postoji kurs sa identifikatorom: " + courseId + "\n" +  "Bicete preusmerenui")
-          this.router.navigate(["/home"]);
-        }
+        this.firebaseService.getAllCourses().subscribe(courses => {
+          var c = courses.find(course => {
+            return course['id'].toString() === courseId.toString();
+          });
 
-        //check if 'courseName' matches passed 'courseId'
-        if (this.course.naziv != courseName){
-          alert("Ime trazenog kursa se ne podudara sa imenom kursa iz baze podataka! Bicete preusmerenui")
-          this.router.navigate(["/home"]);
-        }
+          this.course = c;
+          if (this.courseHasBeenDeleted){
+            alert("Course is deactivated. You will be redirecated to home page!")
+            this.router.navigate(["/home"]);
+            return;
+          }
+          this.checkCategory(this.course['kategorija'])
+          this.initReactiveForm();
 
-        //if everyting is ok
-        this.checkCategory(this.course['kategorija'])
-        this.initReactiveForm();        
+        });
+        
 
       } else {
-        alert("Morate poslati validne vredosti za identifikator i ime kursa. Bicete preusmerenui!")
+        alert("Morate poslati validnu vredost za identifikator kursa. Bicete preusmerenui!")
         this.router.navigate(["/home"]);
+        return;
       }
 
     });
@@ -109,17 +102,22 @@ export class CourseComponent implements OnInit {
     this.categoryExist = true;
   }
 
+
+
   submitForm() {
     //if this function is called, then form must be valid!
+    console.log("teeeest")
     console.log(this.myForm.value)
     console.log(this.course)
   }
 
   deactivate(){
     var courseId = this.course['id'];
+    this.courseHasBeenDeleted = true;
+    this.course = Builder(Course).id("-1").build();
     this.firebaseService.deactivateCourse(courseId);
-    alert("Course is deactivated. You will be redirecated to home page!")
-    this.router.navigate(["/home"]);
+    
+   
   }
 
   private initYear(datumIzmene : string) : number{

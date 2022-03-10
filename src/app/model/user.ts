@@ -1,6 +1,6 @@
 export class User{
-    
-    id!: Number
+    key!: string
+    id!: string
     korisnickoIme!: string
     lozinka!: string
     email!: string

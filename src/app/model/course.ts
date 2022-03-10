@@ -1,6 +1,6 @@
 export class Course {
 
-    id!: Number
+    id!: string
     naziv!: String
     autor!: string
     datumIzmene!: string

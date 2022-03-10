@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
+//import { AngularFireAuthModule } from "@angular/fire/auth";
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -13,6 +13,16 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UsersComponent } from './components/users/users.component';
 import { UserComponent } from './components/user/user.component';
 import { HomeComponent } from './components/home/home.component';
+import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
+
+import { AngularFireDatabase } from '@angular/fire/compat/database';
+import { provideFirebaseApp, getApp, initializeApp } from '@angular/fire/app';
+import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+
+import { AngularFireModule } from '@angular/fire/compat';
+import { environment } from 'src/environments/environment';
+
+
 
 @NgModule({
   declarations: [
@@ -26,6 +36,8 @@ import { HomeComponent } from './components/home/home.component';
     HomeComponent
   ],
   imports: [
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFireDatabaseModule,    
     BrowserModule,
     AppRoutingModule,
     FormsModule,
